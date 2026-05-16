@@ -522,6 +522,31 @@
         "en"
       ]
     },
+     {
+      "id": "pencurimovie",
+      "name": "pencurimovie",
+      "description": "Direct links via MovieBlast API with multi-language support",
+      "version": "1.0.0",
+      "author": "Nuvio Team",
+      "supportedTypes": [
+        "movie",
+        "tv"
+      ],
+      "filename": "providers/pencurimovie.js",
+      "enabled": true,
+      "formats": [
+        "mp4",
+        "mkv"
+      ],
+      "logo": "https://raw.githubusercontent.com/phisher98/TVVVV/refs/heads/main/Icons/movieblast.png",
+      "contentLanguage": [
+        "te",
+        "hi",
+        "my",
+        "id",
+        "en"
+      ]
+    },
     {
       "id": "mycima",
       "name": "MyCima",
