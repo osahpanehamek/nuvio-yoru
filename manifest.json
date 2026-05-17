@@ -173,7 +173,7 @@
       ]
     },
     {
-{
+
   "id": "dutamovie21",
   "name": "Dutamovie21",
   "description": "Indonesian streaming site mirror with movie and TV scraping support",
@@ -189,7 +189,6 @@
   "contentLanguage": [
     "id"
   ]
-}
 },
     {
       "id": "vixsrc",
