@@ -549,7 +549,7 @@
     "movie",
     "tv"
   ],
-  "filename": "providers/pencurimoviesubmalay.js",
+  "filename": "providers/pencurimovie.js",
   "enabled": true,
   "logo": "https://www.google.com/s2/favicons?domain=ww105.pencurimoviesubmalay.guru&sz=128",
   "contentLanguage": [
