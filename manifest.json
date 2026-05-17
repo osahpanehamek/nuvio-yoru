@@ -173,6 +173,30 @@
       ]
     },
     {
+  "id": "dutamovie21",
+  "name": "Dutamovie21",
+  "description": "Indonesian streaming site (LK21 / Layarkaca21 / Rebahin mirror) — movies & TV series with Indonesian subtitles. Scrapes simplycufflinks.com.",
+  "version": "1.0.0",
+  "baseUrl": "https://simplycufflinks.com",
+  "language": "id",
+  "supportedTypes": ["movie", "tv"],
+  "hasSubs": true,
+  "subLanguages": ["Indonesian"],
+  "requiresProxy": false,
+  "scraper": "dutamovie21.js",
+  "logo": "https://simplycufflinks.com/wp-content/uploads/2023/03/logo-dutamovie21.png",
+  "headers": {
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36",
+    "Referer": "https://simplycufflinks.com/",
+    "Accept-Language": "en-US,en;q=0.9,id;q=0.8"
+  },
+  "slugPattern": "{title-slug}-{year}",
+  "searchUrl": "https://simplycufflinks.com/?s={query}&post_type[]=post&post_type[]=tv",
+  "movieUrl": "https://simplycufflinks.com/{slug}/",
+  "tvUrl": "https://simplycufflinks.com/tv/{slug}/season-{season}/episode-{episode}/",
+  "tvFallbackUrl": "https://simplycufflinks.com/{slug}-s{season}e{episode}/"
+},
+    {
       "id": "vixsrc",
       "name": "Vixsrc",
       "description": "Vixsrc M3U8 streaming with auto quality selection",
