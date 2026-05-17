@@ -1,231 +1,293 @@
-/**
- * cinemacity - Built from src/cinemacity/
- * Generated: 2026-04-26T06:45:39.580Z
- */
-var __defProp = Object.defineProperty;
-var __defProps = Object.defineProperties;
-var __getOwnPropDescs = Object.getOwnPropertyDescriptors;
-var __getOwnPropSymbols = Object.getOwnPropertySymbols;
-var __hasOwnProp = Object.prototype.hasOwnProperty;
-var __propIsEnum = Object.prototype.propertyIsEnumerable;
-var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __spreadValues = (a, b) => {
-  for (var prop in b || (b = {}))
-    if (__hasOwnProp.call(b, prop))
-      __defNormalProp(a, prop, b[prop]);
-  if (__getOwnPropSymbols)
-    for (var prop of __getOwnPropSymbols(b)) {
-      if (__propIsEnum.call(b, prop))
-        __defNormalProp(a, prop, b[prop]);
-    }
-  return a;
+// PencuriMovie SubMalay scraper for Nuvio
+// Domain: https://ww105.pencurimoviesubmalay.guru/
+// Promise-based, React Native compatible
+
+const BASE_URL = 'https://ww105.pencurimoviesubmalay.guru';
+const TMDB_API_KEY = '439c478a771f35c05022f9feabcca01c';
+const TMDB_BASE_URL = 'https://api.themoviedb.org/3';
+
+const HEADERS = {
+  'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36',
+  'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+  'Accept-Language': 'en-US,en;q=0.9,ms;q=0.8',
+  'Accept-Encoding': 'gzip, deflate, br',
+  'Referer': BASE_URL + '/',
+  'Origin': BASE_URL
 };
-var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
-var __async = (__this, __arguments, generator) => {
-  return new Promise((resolve, reject) => {
-    var fulfilled = (value) => {
-      try {
-        step(generator.next(value));
-      } catch (e) {
-        reject(e);
-      }
-    };
-    var rejected = (value) => {
-      try {
-        step(generator.throw(value));
-      } catch (e) {
-        reject(e);
-      }
-    };
-    var step = (x) => x.done ? resolve(x.value) : Promise.resolve(x.value).then(fulfilled, rejected);
-    step((generator = generator.apply(__this, __arguments)).next());
+
+const PLAYBACK_HEADERS = {
+  'User-Agent': HEADERS['User-Agent'],
+  'Accept': 'video/webm,video/ogg,video/*;q=0.9,application/ogg;q=0.7,audio/*;q=0.6,*/*;q=0.5',
+  'Accept-Language': 'en-US,en;q=0.9',
+  'Accept-Encoding': 'identity',
+  'Referer': BASE_URL + '/',
+  'Origin': BASE_URL
+};
+
+function makeRequest(url, options) {
+  options = options || {};
+  return fetch(url, {
+    method: options.method || 'GET',
+    headers: Object.assign({}, HEADERS, options.headers || {})
+  }).then(function (response) {
+    if (!response.ok) throw new Error('HTTP ' + response.status + ' ' + response.statusText);
+    return response;
   });
-};
+}
 
-// src/cinemacity/constants.js
-var MAIN_URL = "https://ww105.pencurimoviesubmalay.guru";
-var HEADERS = {
-  "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36",
-  "Cookie": "starstruck_190fe508139b417479c63b112781c8e7=6b72ea42f54a6cc0067373f7906e256b; cf_clearance=24S6uyuUe_MWmFo8BUTs8oAqOJEKjZPS2bB8D.42pZo-1778944537-1.2.1.1-a7QmgdoXgLJ_K3GNg_vBQ14IpMzKYDgHPz1ikpIL05T5Q6cWP1Ia4Mt7_awC6_V9UeXJQVwJi4fpeh_swKGMToXn0INrYPuLl6qFAI.Q.qMHFahVaj3YvkfC6A_h1oOk4IYg_KoIvCsRr5KCFt0ijgjTz9yOtjQra9rgr180vR9VnjmTXAL7n.uNy1AMgTx6bqXXlj6e8ywZJeXx3LR1JkWnsQ.lYfHz4jEuLzhXR81Un7xGe8LmsusaN4LqZj_izpO6OFXbydpetIvMB2CQ2OQ665TqaFX3wE1p8uKl5JJtD.C_YM1vW4o2EWdEpL1mcxmSHX8jxGMo.9C8T.jYLQ",
-  "Referer": "https://ww105.pencurimoviesubmalay.guru/"
-};
-var TMDB_API_KEY = "1865f43a0549ca50d341dd9ab8b29f49";
+function getTMDBDetails(tmdbId, mediaType) {
+  const endpoint = mediaType === 'tv' ? 'tv' : 'movie';
+  const url = TMDB_BASE_URL + '/' + endpoint + '/' + tmdbId + '?api_key=' + TMDB_API_KEY;
+  return makeRequest(url)
+    .then(function (r) { return r.json(); })
+    .then(function (data) {
+      const title = mediaType === 'tv' ? data.name : data.title;
+      const date = mediaType === 'tv' ? data.first_air_date : data.release_date;
+      const year = date ? parseInt(date.split('-')[0], 10) : null;
+      return { title: title, year: year };
+    });
+}
 
-// src/cinemacity/utils.js
-var atobPolyfill = (str) => {
-  try {
-    const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
-    let output = "";
-    str = String(str).replace(/[=]+$/, "");
-    if (str.length % 4 === 1)
-      return "";
-    for (let bc = 0, bs = 0, buffer, i = 0; buffer = str.charAt(i++); ~buffer && (bs = bc % 4 ? bs * 64 + buffer : buffer, bc++ % 4) ? output += String.fromCharCode(255 & bs >> (-2 * bc & 6)) : 0) {
-      buffer = chars.indexOf(buffer);
-    }
-    return output;
-  } catch (e) {
-    return "";
+function slugify(title) {
+  return String(title || '')
+    .toLowerCase()
+    .replace(/['".:,&!?()[\]’]/g, '')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+}
+
+function buildCandidateSlugs(title, year, mediaType, season, episode) {
+  const base = slugify(title);
+  const out = [];
+  if (mediaType === 'tv' && season && episode) {
+    out.push(base + '-season-' + season + '-episode-' + episode);
+    out.push(base + '-s' + String(season).padStart(2, '0') + 'e' + String(episode).padStart(2, '0'));
+    out.push(base + '-' + year + '-season-' + season + '-episode-' + episode);
   }
-};
-function fetchText(_0) {
-  return __async(this, arguments, function* (url, options = {}) {
-    const response = yield fetch(url, __spreadValues({
-      headers: options.headers || HEADERS,
-      skipSizeCheck: true
-    }, options));
-    return yield response.text();
-  });
-}
-function extractQuality(url) {
-  const low = (url || "").toLowerCase();
-  if (low.includes("2160p") || low.includes("4k"))
-    return "4K";
-  if (low.includes("1080p"))
-    return "1080p";
-  if (low.includes("720p"))
-    return "720p";
-  if (low.includes("480p"))
-    return "480p";
-  if (low.includes("360p"))
-    return "360p";
-  return "HD";
+  if (year) out.push(base + '-' + year);
+  out.push(base);
+  return out.filter(Boolean);
 }
 
-// src/cinemacity/index.js
-function getStreams(tmdbId, mediaType, season, episode) {
-  return __async(this, null, function* () {
-    try {
-      const tmdbUrl = `https://api.themoviedb.org/3/${mediaType === "tv" ? "tv" : "movie"}/${tmdbId}?api_key=${TMDB_API_KEY}`;
-      const tmdbRes = yield fetch(tmdbUrl, { skipSizeCheck: true });
-      const mediaInfo = yield tmdbRes.json();
-      const animeTitle = mediaInfo.title || mediaInfo.name;
-      if (!animeTitle)
-        return [];
-      const searchUrl = `${MAIN_URL}/?do=search&subaction=search&search_start=0&full_search=0&story=${encodeURIComponent(animeTitle)}`;
-      const searchHtml = yield fetchText(searchUrl);
-      const $search = cheerio.load(searchHtml);
-      let mediaUrl = null;
-      $search("div.dar-short_item").each((i, el) => {
-        if (mediaUrl)
-          return;
-        const anchor = $search(el).find("a").filter((idx, a) => ($search(a).attr("href") || "").includes(".html")).first();
-        if (!anchor.length)
-          return;
-        const foundTitle = anchor.text().split("(")[0].trim();
-        const href = anchor.attr("href");
-        if (foundTitle.toLowerCase() === animeTitle.toLowerCase() || foundTitle.toLowerCase().includes(animeTitle.toLowerCase()) || animeTitle.toLowerCase().includes(foundTitle.toLowerCase())) {
-          mediaUrl = href;
-        }
-      });
-      if (!mediaUrl) {
-        const homeHtml = yield fetchText(MAIN_URL);
-        const $home = cheerio.load(homeHtml);
-        $home("div.dar-short_item").each((i, el) => {
-          if (mediaUrl)
-            return;
-          const anchor = $home(el).find("a").filter((idx, a) => ($home(a).attr("href") || "").includes(".html")).first();
-          if (!anchor.length)
-            return;
-          const foundTitle = anchor.text().split("(")[0].trim();
-          const href = anchor.attr("href");
-          if (foundTitle.toLowerCase() === animeTitle.toLowerCase())
-            mediaUrl = href;
-        });
-      }
-      if (!mediaUrl)
-        return [];
-      const pageHtml = yield fetchText(mediaUrl);
-      const $page = cheerio.load(pageHtml);
-      let fileData = null;
-      $page("script").each((i, el) => {
-        if (fileData)
-          return;
-        const html = $page(el).html();
-        if (html && html.includes("atob")) {
-          const regex = /atob\s*\(\s*(['"])(.*?)\1\s*\)/g;
-          let match;
-          while ((match = regex.exec(html)) !== null) {
-            const decoded = atobPolyfill(match[2]);
-            const fileMatch = decoded.match(new RegExp(`file\\s*:\\s*(['"])(.*?)\\1`, "s")) || decoded.match(new RegExp("file\\s*:\\s*(\\[.*?\\])", "s"));
-            if (fileMatch) {
-              let rawFile = fileMatch[2] || fileMatch[1];
-              if (rawFile && rawFile.length > 5) {
-                if (rawFile.startsWith("[") || rawFile.startsWith("{")) {
-                  try {
-                    const unescaped = rawFile.replace(/\\(.)/g, "$1");
-                    fileData = JSON.parse(unescaped);
-                  } catch (e) {
-                    try {
-                      fileData = JSON.parse(rawFile);
-                    } catch (e2) {
-                      fileData = rawFile;
-                    }
-                  }
-                } else {
-                  fileData = rawFile;
-                }
-                if (fileData)
-                  break;
-              }
-            }
-          }
-        }
-      });
-      if (!fileData)
-        return [];
-      const streams = [];
-      const addStream = (url, title, quality) => {
-        if (!url || !url.startsWith("http") || url.length < 15)
-          return;
-        streams.push({
-          name: "CinemaCity",
-          title,
-          url,
-          quality: quality || extractQuality(url),
-          headers: __spreadProps(__spreadValues({}, HEADERS), {
-            // Re-include cookies as they may be required for the CDN
-            Referer: "https://ww105.pencurimoviesubmalay.guru/"
-          })
-        });
-      };
-      const processStr = (str, title) => {
-        if (str.includes(".urlset/master.m3u8")) {
-          addStream(str, title, "Auto");
-        } else {
-          const urls = str.includes("[") ? str.split(",") : [str];
-          urls.forEach((u) => {
-            const m = u.match(/\[(.*?)\](.*)/);
-            if (m)
-              addStream(m[2], title, m[1]);
-            else
-              addStream(u, title, extractQuality(u));
-          });
-        }
-      };
-      if (mediaType === "movie") {
-        if (Array.isArray(fileData)) {
-          const obj = fileData.find((f) => !f.folder && f.file) || fileData[0];
-          if (obj && obj.file)
-            processStr(obj.file, animeTitle);
-        } else if (typeof fileData === "string") {
-          processStr(fileData, animeTitle);
-        }
-      } else {
-        if (Array.isArray(fileData)) {
-          const sLabel = `Season ${season}`;
-          const sObj = fileData.find((s) => (s.title || "").includes(sLabel) || (s.title || "").includes(`S${season}`));
-          if (sObj && sObj.folder) {
-            const eLabel = `Episode ${episode}`;
-            const eObj = sObj.folder.find((e) => (e.title || "").includes(eLabel) || (e.title || "").includes(`E${episode}`));
-            if (eObj && eObj.file)
-              processStr(eObj.file, `${animeTitle} S${season}E${episode}`);
-          }
-        }
-      }
-      return streams;
-    } catch (error) {
-      return [];
+function extractUrls(html, regex) {
+  const out = [];
+  let m;
+  while ((m = regex.exec(html)) !== null) {
+    const val = (m[1] || '').trim();
+    if (val && out.indexOf(val) === -1) out.push(val);
+  }
+  return out;
+}
+
+function extractIframeUrls(html) {
+  return extractUrls(html, /<iframe[^>]+src=["']([^"'#]+)["']/gi)
+    .concat(extractUrls(html, /data-src=["']([^"'#]+)["']/gi))
+    .filter(function (u, i, arr) {
+      return arr.indexOf(u) === i;
+    });
+}
+
+function extractMediaUrls(html) {
+  const found = [];
+  [
+    /<source[^>]+src=["']([^"']+)["']/gi,
+    /["']file["']\s*:\s*["']([^"']+)["']/gi,
+    /["']src["']\s*:\s*["']([^"']+\.(?:m3u8|mp4)[^"']*)["']/gi,
+    /(https?:\/\/[^"'\\\s<>]+(?:\.m3u8|\.mp4)[^"'\\\s<>]*)/gi
+  ].forEach(function (rx) {
+    let m;
+    while ((m = rx.exec(html)) !== null) {
+      const u = (m[1] || '').trim();
+      if (u && found.indexOf(u) === -1) found.push(u);
     }
   });
+  return found;
 }
-module.exports = { getStreams };
+
+function normalizeUrl(url) {
+  if (!url) return '';
+  if (url.indexOf('//') === 0) return 'https:' + url;
+  return url;
+}
+
+function getQualityFromUrl(url) {
+  if (!url) return 'Unknown';
+  const m = url.match(/(\d{3,4})p/i);
+  if (m) {
+    const q = parseInt(m[1], 10);
+    if (q >= 2160) return '4K';
+    if (q >= 1440) return '1440p';
+    if (q >= 1080) return '1080p';
+    if (q >= 720) return '720p';
+    if (q >= 480) return '480p';
+    if (q >= 360) return '360p';
+    return '240p';
+  }
+  if (/4k|2160/i.test(url)) return '4K';
+  if (/1080|fhd/i.test(url)) return '1080p';
+  if (/720|hd/i.test(url)) return '720p';
+  if (/480|sd/i.test(url)) return '480p';
+  return 'Unknown';
+}
+
+function searchSite(title) {
+  const url = BASE_URL + '/?s=' + encodeURIComponent(title);
+  return makeRequest(url)
+    .then(function (r) { return r.text(); })
+    .then(function (html) {
+      const links = extractUrls(html, /href=["'](https:\/\/ww105\.pencurimoviesubmalay\.guru\/[^"'?#]+\/)["']/gi)
+        .filter(function (u) {
+          return (
+            u.indexOf('/group_movie/') === -1 &&
+            u.indexOf('/search/') === -1 &&
+            u.indexOf('/comments/') === -1 &&
+            u.indexOf('/wp-content/') === -1 &&
+            u !== BASE_URL + '/'
+          );
+        });
+      return links;
+    })
+    .catch(function () { return []; });
+}
+
+function tryCandidatePages(candidates) {
+  let p = Promise.resolve(null);
+  candidates.forEach(function (url) {
+    p = p.then(function (result) {
+      if (result) return result;
+      return makeRequest(url)
+        .then(function (r) { return r.text(); })
+        .then(function (html) {
+          if (/404|page not found|not found/i.test(html)) return null;
+          return { url: url, html: html };
+        })
+        .catch(function () { return null; });
+    });
+  });
+  return p;
+}
+
+function resolveIframe(url, referer) {
+  url = normalizeUrl(url);
+  return fetch(url, {
+    method: 'GET',
+    headers: Object.assign({}, HEADERS, {
+      Referer: referer || (BASE_URL + '/')
+    })
+  })
+    .then(function (r) {
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      return r.text();
+    })
+    .then(function (html) {
+      return {
+        media: extractMediaUrls(html),
+        nested: extractIframeUrls(html)
+      };
+    })
+    .catch(function () {
+      return { media: [], nested: [] };
+    });
+}
+
+function buildStream(url, title, label) {
+  return {
+    name: 'PencuriMovie' + (label ? ' - ' + label : ''),
+    title: title,
+    url: url,
+    quality: getQualityFromUrl(url),
+    size: 'Unknown',
+    headers: PLAYBACK_HEADERS,
+    provider: 'pencurimoviesubmalay'
+  };
+}
+
+function flatten(arr) {
+  return [].concat.apply([], arr);
+}
+
+function dedupeStreams(streams) {
+  const seen = {};
+  return streams.filter(function (s) {
+    if (!s || !s.url || seen[s.url]) return false;
+    seen[s.url] = true;
+    return true;
+  });
+}
+
+function sortStreams(streams) {
+  const order = { '4K': 6, '1440p': 5, '1080p': 4, '720p': 3, '480p': 2, '360p': 1, '240p': 0, 'Unknown': -1 };
+  return streams.sort(function (a, b) {
+    return (order[b.quality] || -1) - (order[a.quality] || -1);
+  });
+}
+
+function getStreams(tmdbId, mediaType, seasonNum, episodeNum) {
+  return getTMDBDetails(tmdbId, mediaType)
+    .then(function (info) {
+      const candidates = buildCandidateSlugs(info.title, info.year, mediaType, seasonNum, episodeNum)
+        .map(function (slug) { return BASE_URL + '/' + slug + '/'; });
+
+      return tryCandidatePages(candidates)
+        .then(function (page) {
+          if (page) return page;
+          return searchSite(info.title).then(function (links) {
+            return tryCandidatePages(links.slice(0, 5));
+          });
+        })
+        .then(function (page) {
+          if (!page || !page.html) return [];
+
+          let streams = [];
+          const mediaTitle =
+            mediaType === 'tv' && seasonNum && episodeNum
+              ? info.title + ' S' + String(seasonNum).padStart(2, '0') + 'E' + String(episodeNum).padStart(2, '0')
+              : (info.year ? info.title + ' (' + info.year + ')' : info.title);
+
+          const directMedia = extractMediaUrls(page.html).map(function (u) {
+            return buildStream(normalizeUrl(u), mediaTitle, 'Direct');
+          });
+
+          streams = streams.concat(directMedia);
+
+          const iframes = extractIframeUrls(page.html).slice(0, 6);
+
+          return Promise.all(
+            iframes.map(function (iframeUrl) {
+              return resolveIframe(iframeUrl, page.url).then(function (res1) {
+                const level1 = res1.media.map(function (u) {
+                  return buildStream(normalizeUrl(u), mediaTitle, 'Embed');
+                });
+
+                return Promise.all(
+                  res1.nested.slice(0, 3).map(function (nestedUrl) {
+                    return resolveIframe(nestedUrl, normalizeUrl(iframeUrl)).then(function (res2) {
+                      return res2.media.map(function (u) {
+                        return buildStream(normalizeUrl(u), mediaTitle, 'Nested');
+                      });
+                    });
+                  })
+                ).then(function (nestedStreams) {
+                  return level1.concat(flatten(nestedStreams));
+                });
+              });
+            })
+          ).then(function (embedStreams) {
+            streams = streams.concat(flatten(embedStreams));
+            streams = dedupeStreams(streams);
+            streams = sortStreams(streams);
+            return streams;
+          });
+        });
+    })
+    .catch(function (err) {
+      console.error('PencuriMovie scraper error:', err.message);
+      return [];
+    });
+}
+
+if (typeof module !== 'undefined') {
+  module.exports = getStreams;
+} else {
+  global.PencuriMovieSubMalayScraperModule = getStreams;
+}
