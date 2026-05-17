@@ -173,23 +173,22 @@
       ]
     },
     {
-
-  "id": "dutamovie21",
-  "name": "Dutamovie21",
-  "description": "Indonesian streaming site mirror with movie and TV scraping support",
-  "version": "1.0.0",
-  "author": "Nuvio Team",
-  "supportedTypes": [
-    "movie",
-    "tv"
-  ],
-  "filename": "providers/dutamovie21.js",
-  "enabled": true,
-  "logo": "https://www.google.com/s2/favicons?domain=simplycufflinks.com&sz=128",
-  "contentLanguage": [
-    "id"
-  ]
-},
+      "id": "dutamovie21",
+      "name": "Dutamovie21",
+      "description": "Indonesian streaming site mirror with movie and TV scraping support",
+      "version": "1.0.0",
+      "author": "Nuvio Team",
+      "supportedTypes": [
+        "movie",
+        "tv"
+      ],
+      "filename": "providers/dutamovie21.js",
+      "enabled": true,
+      "logo": "https://www.google.com/s2/favicons?domain=simplycufflinks.com&sz=128",
+      "contentLanguage": [
+        "id"
+      ]
+    },
     {
       "id": "vixsrc",
       "name": "Vixsrc",
